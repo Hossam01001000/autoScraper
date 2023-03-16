@@ -8,19 +8,23 @@ for(let link of jobLinks){
     // check for the applecation button then click it
     if(applingButton){
         applingButton.click()
-        await wait(.8)
+        await wait(1)
         let newDoc = fish('.artdeco-modal-overlay artdeco-modal-overlay--layer-default artdeco-modal-overlay--is-top-layer ember-view'.split(' ').join('.')) 
         if(newDoc){
+            let weStillHere = true
+            while(weStillHere){
             let inpElements = newDoc.querySelectorAll('input,select,textarea');
             if(inpElements.length){
                 let file = 0
+                let redFlags = 0
                 for(let element of inpElements){
                     let itsId = element.id ?element.id:'';
-                    let itslabel = itsId ?  newDoc.querySelector(`[for="${itsId}"]`) :'';
+                    let itslabel = element.labels[0] 
+                    // itsId ?  newDoc.querySelector(`[for="${itsId}"]`) :'';
                     // represents the element object will be checked and pushed to the final results array
                     let it ={}
                     // red flags will be increased at any case of unsatsfyible requirement and will be checked for at yhe end of the loop if its not 0 it will break
-                    let redFlags = 0
+                    
                     
                     switch (element.tagName) {
                         case 'INPUT':
@@ -30,10 +34,10 @@ for(let link of jobLinks){
                                     {
                                         
                                         if(element.value){
-                                            it[`${itslabel.innerHTML}`] = element.value
+                                            it[`${itslabel.textContent}`] = element.value
                                         }
                                         else {
-                                            it[`${itslabel.innerHTML}`] = 'default'
+                                            it[`${itslabel.textContent}`] = 'default'
                                             element.value = 'default'
                                         }
                                         
@@ -46,7 +50,7 @@ for(let link of jobLinks){
                                         if(itslabel)
                                         {
                                             
-                                            it[`${itslabel.innerHTML}`] = 'file'
+                                            it[`${itslabel.textContent}`] = 'file'
                                             if(!file >0){
                                                 document.querySelector('[aria-label="Choose Resume"]').click()
                                                 file++;
@@ -68,7 +72,7 @@ for(let link of jobLinks){
                                         if(itslabel)
                                         {
                                             
-                                            it[`${itslabel.innerHTML}`] = 'checkbox'
+                                            it[`${itslabel.textContent}`] = 'checkbox'
                                             
                                             
                                         }
@@ -77,17 +81,35 @@ for(let link of jobLinks){
                                         
                                     break;
                                 case 'radio':
-                                        if(itslabel)
-                                        {
+                                        // if(itslabel)
+                                        // {
                                             
-                                            it[`${itslabel.innerHTML}`] = 'checkbox'
+                                        //     it[`${itslabel.textContent}`] = 'checkbox'
                                             
                                             
-                                        }
+                                        // }
                                         if(!element.checked){element.click()}
                                         
                                         
-                                    break;   
+                                    break;  
+                                case 'number':
+                                    if(itslabel){
+                                        if(element.value){
+                                        it[`${itslabel.textContent}`] = element.value
+                                        }
+                                        else{
+                                            it[`${itslabel.textContent}`] = 148
+                                            element.value = 148
+                                        }
+                                    }
+                                    if(!element.value){
+                                        element.value = 148
+                                    }
+                                    
+                                    
+
+
+
 
 
                             
@@ -97,22 +119,111 @@ for(let link of jobLinks){
                                     
                             }
                             
+                            
+                            break;
+                        case 'SELECT':
+                            let options = element.querySelectorAll('option')
+                            if(itslabel){
+                                if(element.value != options[0].value){
+                                    it[`${itslabel.textContent}`] = element.value
+                                }
+                                else{
+                                    element.value = element.querySelectorAll('option')[1].value
+                                    it[`${itslabel.textContent}`] = element.value
+                                }
+                            }
+                            else{
+                                if(element.value != options[0].value){
+                                    
+                                }
+                                else{
+                                    element.value = element.querySelectorAll('option')[1].value
+                                    
+                                }
+                            }
+                            break;
+                        case 'TEXTAREA':
+                            if(itslabel){
+                                it[`${itslabel.textContent}`] = 'this is a textarea'
+
+                            }
+                            if(element.required){
+                                element.value = 'this is a text area'
+                            }
                             break;
                     
                         default:
+                            redFlags ++;
                             break;
                     }
+
+                    if(Object.keys(it).length){
+                        finalResults.push(it)
+                    }
                 }
+                // after looping through the elments
+                if(redFlags > 0){
+                    let exit = newDoc.querySelector('[aria-label="Dismiss"]')
+                    exit.click()
+                    await wait(.7)
+                    let discard = document.querySelector('[data-control-name="discard_application_confirm_btn"]')
+                    discard.click()
+                    await wait(.7)
+                    weStillHere = false 
+
+                }
+                let nextbutton=newDoc.querySelector('[aria-label="Continue to next step"]')
+                if(nextbutton){
+                    let current = newDoc.querySelector('[class="display-flex ph5 pv2"]').innerHTML
+                    try {nextbutton.click()
+                    await wait(.8)
+                    if (current == newDoc.querySelector('[class="display-flex ph5 pv2"]').innerHTML){
+                     let exit = newDoc.querySelector('[aria-label="Dismiss"]')
+                     exit.click()
+                     await wait(.7)
+                     let discard = document.querySelector('[data-control-name="discard_application_confirm_btn"]')
+                     discard.click()
+                     await wait(.7)
+                      weStillHere = false
+
+                    }
+                }
+                catch{
+                    let exit = newDoc.querySelector('[aria-label="Dismiss"]')
+                     exit.click()
+                     await wait(.7)
+                     let discard = document.querySelector('[data-control-name="discard_application_confirm_btn"]')
+                     discard.click()
+                     weStillHere = false
+
+                }
+                }
+                else{
+                    let exit = newDoc.querySelector('[aria-label="Dismiss"]')
+                     exit.click()
+                     await wait(.7)
+                     let discard = document.querySelector('[data-control-name="discard_application_confirm_btn"]')
+                     discard.click()
+                     weStillHere = false
+
+
+                }
+                
             }
+            else{
+                let exit = newDoc.querySelector('[aria-label="Dismiss"]')
+                exit.click()
+                await wait(.7)
+                let discard = document.querySelector('[data-control-name="discard_application_confirm_btn"]')
+                discard.click()
+                await wait(.7)
+                weStillHere = false
+                
+            }
+        }
+
 
         }
 
     }
-
-
-    const cleanerElement = jobInfo.replace(/<[^>]*>/g, "");
-    // append the element to the final array
-    finalREsults.push(cleanerElement)
-
-
 }

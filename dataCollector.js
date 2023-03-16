@@ -9,7 +9,7 @@ let fishes = (arg)=>{
 }
 // define the final array
 
-let finalREsults = []
+let finalResults = []
 
 // first get the number of pages
 
