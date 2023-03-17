@@ -52,15 +52,19 @@ for(let link of jobLinks){
                                             
                                             it[`${itslabel.textContent}`] = 'file'
                                             if(!file >0){
+                                               if(document.querySelector('[aria-label="Choose Resume"]')){
                                                 document.querySelector('[aria-label="Choose Resume"]').click()
                                                 file++;
+                                               }
                                             }
                                             
                                         }
                                         else{
                                             if(!file >0){
-                                                document.querySelector('[aria-label="Choose Resume"]').click()
-                                                file++;
+                                                if(document.querySelector('[aria-label="Choose Resume"]')){
+                                                    document.querySelector('[aria-label="Choose Resume"]').click()
+                                                    file++;
+                                                   }
                                             }
                                            
 
