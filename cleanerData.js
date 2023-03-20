@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-fs.readFile('finalResults.json', 'utf8', (err, data) => {
+fs.readFile('data.json', 'utf8', (err, data) => {
   if (err) {
     console.error(err);
     return;
@@ -10,20 +10,28 @@ fs.readFile('finalResults.json', 'utf8', (err, data) => {
   console.log(jsonData.length)
   for (let data of jsonData){
     let key = Object.keys(data)[0]
-    let newKey = key.replace(/\n/g,"").trim()
-    let obj = {}
-    obj[newKey] = data[key]
-    parsedArray.push(obj)
+    let unique = 0
+    for(let car of parsedArray){
+      if(key.toLowerCase() == Object.keys(car)[0].toLowerCase()){
+        if(data[key].toLowerCase() == car[Object.keys(car)[0]].toLowerCase()){unique ++;}
+        
+      }
+    }
+    if(unique ==0){
+      let jack ={}
+      jack[key.toLowerCase()]=data[key].toLowerCase()
+      parsedArray.push(jack)
+    }
 
 
 
   }
   console.log(parsedArray.length)
-  uniqueArr = [...new Set(parsedArray)]
-  console.log(uniqueArr.length)
-  const jsonString = JSON.stringify(uniqueArr);
+  // uniqueArr = [...new Set(parsedArray)]
+  // console.log(uniqueArr.length)
+  const jsonString = JSON.stringify(parsedArray);
 
- fs.writeFile('data.json', jsonString, 'utf8', (err) => {
+ fs.writeFile('newData.json', jsonString, 'utf8', (err) => {
   if (err) {
     console.error(err);
     return;

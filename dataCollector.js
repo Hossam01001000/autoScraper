@@ -30,7 +30,7 @@ for(let i=0; i<pagesNum;i++){
         // grap the job discription element fom the DOM
         let jobInfo=fish('#job-details').innerHTML;
         
-        const cleanerElement = jobInfo.replace(/<[^>]*>/g, "");
+        const cleanerElement = jobInfo.replace(/<[^>]*>/g, "").replace(/\n/g,"").trim();
         // append the element to the final array
         finalREsults.push(cleanerElement)
 
